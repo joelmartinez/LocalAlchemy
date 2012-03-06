@@ -81,6 +81,8 @@ namespace LocalAlchemy
         {
             Console.WriteLine("processing ..." + bingkey );
             Console.WriteLine("sfile: " + sfile);
+
+
             //Bing.LanguageServiceClient client = new Bing.LanguageServiceClient();
             //string translatedText = client.Translate(bingkey, textToTranslate, slang, dlang);
    
