@@ -18,7 +18,9 @@ namespace LocalAlchemy
         {
             XDocument doc = XDocument.Load(file, LoadOptions.None);
 
-            return doc.Descendants("resources").Select(x => new TranslateUnit { Key = x.Attribute("name").Value, Value = x.Value });
+            return doc
+                .Descendants("resources")
+                .Select(x => new TranslateUnit { Key = x.Element("string").Attribute("name").Value, Value = x.Element("string").Value });
         }
 
         public override void Write(string sourcefile, string targetLang, IEnumerable<TranslateUnit> translated)

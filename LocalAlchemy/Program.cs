@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Mono.Options;
 using System.IO;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace LocalAlchemy
 {
@@ -82,10 +84,32 @@ namespace LocalAlchemy
             Console.WriteLine("processing ..." + bingkey );
             Console.WriteLine("sfile: " + sfile);
 
+            Parser parser = new AndroidParser();
+            var items = parser.Parse(sfile);
 
-            //Bing.LanguageServiceClient client = new Bing.LanguageServiceClient();
-            //string translatedText = client.Translate(bingkey, textToTranslate, slang, dlang);
-   
+            Bing.LanguageServiceClient client = new Bing.LanguageServiceClient();
+
+            ConcurrentQueue<TranslateUnit> results = new ConcurrentQueue<TranslateUnit>();
+
+            Parallel.ForEach(items, item =>
+                {
+                    try
+                    {
+                        Console.WriteLine("translating: " + item);
+                        string translatedText = client.Translate(bingkey, item.Value, slang, dlang);
+                        var newResult = new TranslateUnit { Key = item.Key, Value = translatedText };
+
+                        Console.WriteLine("result: " + newResult);
+
+                        results.Enqueue(newResult);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("/tError: {0}", e.Message);
+                    }
+                });
+
+            parser.Write(sfile, dlang, results);
         }
 
         private static OptionSet ConfigureOptions()
