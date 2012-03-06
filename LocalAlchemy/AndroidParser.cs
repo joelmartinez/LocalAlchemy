@@ -20,7 +20,8 @@ namespace LocalAlchemy
 
             return doc
                 .Descendants("resources")
-                .Select(x => new TranslateUnit { Key = x.Element("string").Attribute("name").Value, Value = x.Element("string").Value });
+                .Descendants("string")
+                .Select(x => new TranslateUnit { Key = x.Attribute("name").Value, Value = x.Value });
         }
 
         public override void Write(string sourcefile, string targetLang, IEnumerable<TranslateUnit> translated)
@@ -29,7 +30,10 @@ namespace LocalAlchemy
                 new XAttribute("name", t.Key),
                 new XText(t.Value)));
 
-            var xml = new XElement("resources", items.ToArray());
+            var xml = new XDocument(
+                new XDeclaration("1.0", "utf-8", null),
+                new XElement("resources", items.ToArray())
+                );
 
             string dpath = Path.Combine(
                 Path.GetDirectoryName(sourcefile),
