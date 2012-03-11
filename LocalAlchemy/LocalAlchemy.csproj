@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AndroidParser.cs" />
+    <Compile Include="AppleParser.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />
