@@ -28,7 +28,7 @@ namespace LocalAlchemy
         {
             var items = translated.Select(t => new XElement("string",
                 new XAttribute("name", t.Key),
-                new XText(t.Value)));
+                new XText(t.EscapedValue)));
 
             var xml = new XDocument(
                 new XDeclaration("1.0", "utf-8", null),
@@ -37,7 +37,7 @@ namespace LocalAlchemy
 
             string dpath = Path.Combine(
                 Path.GetDirectoryName(sourcefile),
-                string.Format("{0}.{1}.{2}", Path.GetFileNameWithoutExtension(sourcefile), targetLang, this.FileType));
+                string.Format("{0}.{1}{2}", Path.GetFileNameWithoutExtension(sourcefile), targetLang, this.FileType));
 
             File.WriteAllText(dpath, xml.ToString());
         }

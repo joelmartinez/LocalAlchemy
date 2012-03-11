@@ -21,13 +21,13 @@ namespace LocalAlchemy
             string keyRegex = @"""([\w\d\s_\-]+)""";
             string valueRegex = @"=\s*\""(.+)\"";";
 
-            int i=0;
+            int i = 0;
             return rows
                 .Where(r => !r.StartsWith("//") || !r.StartsWith("/*"))
-                .Select(r => 
+                .Select(r =>
                     {
                         // now to parse the row
-                        
+
                         var keymatch = Regex.Match(r, keyRegex);
                         var valuematch = Regex.Match(r, valueRegex);
 
@@ -45,7 +45,19 @@ namespace LocalAlchemy
 
         public override void Write(string sourcefile, string targetLang, IEnumerable<TranslateUnit> translated)
         {
-            
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var result in translated)
+            {
+                //"ApplicationCaptionsBackButton" = "Back";
+                sb.AppendFormat("\"{0}\" = \"{1}\";\n", result.Key, result.EscapedValue);
+            }
+
+            string dpath = Path.Combine(
+                Path.GetDirectoryName(sourcefile),
+                string.Format("{0}.{1}{2}", Path.GetFileNameWithoutExtension(sourcefile), targetLang, this.FileType));
+
+            File.WriteAllText(dpath, sb.ToString());
         }
     }
 }

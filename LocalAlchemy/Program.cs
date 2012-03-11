@@ -97,7 +97,8 @@ namespace LocalAlchemy
                     try
                     {
                         //Console.WriteLine("translating: " + item);
-                        string translatedText = client.Translate(bingkey, item.Value, slang, dlang);
+                        
+                        string translatedText = client.Translate(bingkey, item.CleanValue, slang, dlang);
                         var newResult = new TranslateUnit { Key = item.Key, Value = translatedText };
 
                         Console.WriteLine(newResult);
