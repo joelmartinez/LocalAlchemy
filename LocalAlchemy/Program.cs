@@ -84,22 +84,23 @@ namespace LocalAlchemy
             Console.WriteLine("processing ..." + bingkey );
             Console.WriteLine("sfile: " + sfile);
 
-            Parser parser = new AndroidParser();
+            string x10 = Path.GetExtension(sfile);
+            Parser parser = Parser.Create(x10);
             var items = parser.Parse(sfile);
 
             Bing.LanguageServiceClient client = new Bing.LanguageServiceClient();
 
             ConcurrentQueue<TranslateUnit> results = new ConcurrentQueue<TranslateUnit>();
 
-            Parallel.ForEach(items, item =>
+            Parallel.ForEach(items.Where(i => i.IsValid), item =>
                 {
                     try
                     {
-                        Console.WriteLine("translating: " + item);
+                        //Console.WriteLine("translating: " + item);
                         string translatedText = client.Translate(bingkey, item.Value, slang, dlang);
                         var newResult = new TranslateUnit { Key = item.Key, Value = translatedText };
 
-                        Console.WriteLine("result: " + newResult);
+                        Console.WriteLine(newResult);
 
                         results.Enqueue(newResult);
                     }
@@ -109,7 +110,7 @@ namespace LocalAlchemy
                     }
                 });
 
-            parser.Write(sfile, dlang, results);
+            parser.Write(sfile, dlang, results.OrderBy(r => r.Sort));
         }
 
         private static OptionSet ConfigureOptions()

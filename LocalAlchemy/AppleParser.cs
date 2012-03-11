@@ -11,7 +11,7 @@ namespace LocalAlchemy
     public class AppleParser : Parser
     {
         public AppleParser()
-            : base("strings")
+            : base(".strings")
         {
         }
 
@@ -23,7 +23,7 @@ namespace LocalAlchemy
 
             int i=0;
             return rows
-                .Where(r => !r.StartsWith("//"))
+                .Where(r => !r.StartsWith("//") || !r.StartsWith("/*"))
                 .Select(r => 
                     {
                         // now to parse the row
@@ -35,6 +35,7 @@ namespace LocalAlchemy
                         result.Key = keymatch.Groups[1].Value;
                         result.Value = valuematch.Groups[1].Value;
                         result.Sort = i;
+                        result.IsValid = keymatch.Success && valuematch.Success;
 
                         Interlocked.Increment(ref i);
 

@@ -10,7 +10,7 @@ namespace LocalAlchemy
     public class AndroidParser : Parser
     {
         public AndroidParser()
-            : base("xml")
+            : base(".xml")
         {
         }
 
