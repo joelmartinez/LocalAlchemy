@@ -116,7 +116,7 @@ namespace LocalAlchemy
                     }
                 });
 
-            parser.Write(sfile, dlang, results.OrderBy(r => r.Sort));
+            parser.Write(sfile, dlang, results.ToArray().OrderBy(r => r.Sort));
         }
 
         private static OptionSet ConfigureOptions()
