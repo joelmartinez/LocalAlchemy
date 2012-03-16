@@ -92,23 +92,31 @@ namespace LocalAlchemy
 
             ConcurrentQueue<TranslateUnit> results = new ConcurrentQueue<TranslateUnit>();
 
-            Parallel.ForEach(items.Where(i => i.IsValid), item =>
+            Parallel.ForEach(items, item =>
                 {
                     try
                     {
-                        //Console.WriteLine("translating: " + item);
-                        
-                        string translatedText = client.Translate(bingkey, item.CleanValue, slang, dlang);
-                        var newResult = new TranslateUnit 
-                        { 
-                            Key = item.Key, 
-                            Value = translatedText,
-                            Sort = item.Sort
-                        };
+                        if (item.IsValid)
+                        {
+                            // this is a valid text item
+                            string translatedText = client.Translate(bingkey, item.CleanValue, slang, dlang);
+                            var newResult = new TranslateUnit
+                            {
+                                Key = item.Key,
+                                Value = translatedText,
+                                Sort = item.Sort
+                            };
 
-                        Console.WriteLine(newResult);
+                            Console.WriteLine(newResult);
 
-                        results.Enqueue(newResult);
+                            results.Enqueue(newResult);
+                        }
+                        else
+                        {
+                            // other item
+                            results.Enqueue(item);
+                        }
+
                     }
                     catch (Exception e)
                     {

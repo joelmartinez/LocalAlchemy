@@ -23,22 +23,35 @@ namespace LocalAlchemy
 
             int i = 0;
             return rows
-                .Where(r => !r.StartsWith("//") || !r.StartsWith("/*"))
+                .Where(r => !r.StartsWith("/*"))
                 .Select(r =>
                     {
+                        TranslateUnit result;
+
                         // now to parse the row
+                        if (r.StartsWith("//"))
+                        {
+                            result = TranslateUnit.Comment(r);
+                        }
+                        else if (r.Length < 8) // 8 is the # of chars in '"a"="b";'
+                        {
+                            result = TranslateUnit.Whitespace();
+                        }
+                        else
+                        {
+                            var keymatch = Regex.Match(r, keyRegex);
+                            var valuematch = Regex.Match(r, valueRegex);
 
-                        var keymatch = Regex.Match(r, keyRegex);
-                        var valuematch = Regex.Match(r, valueRegex);
+                            result = new TranslateUnit();
+                            result.Key = keymatch.Groups[1].Value;
+                            result.Value = valuematch.Groups[1].Value;
+                            result.IsValid = keymatch.Success && valuematch.Success;
 
-                        var result = new TranslateUnit();
-                        result.Key = keymatch.Groups[1].Value;
-                        result.Value = valuematch.Groups[1].Value;
+
+                        }
+
                         result.Sort = i;
-                        result.IsValid = keymatch.Success && valuematch.Success;
-
                         Interlocked.Increment(ref i);
-
                         return result;
                     });
         }
@@ -49,8 +62,18 @@ namespace LocalAlchemy
 
             foreach (var result in translated)
             {
-                //"ApplicationCaptionsBackButton" = "Back";
-                sb.AppendFormat("\"{0}\" = \"{1}\";\n", result.Key, result.EscapedValue);
+                if (result is TranslateUnit.CommentTranslateUnit)
+                {
+                    sb.AppendFormat("{0}\n", result.Value);
+                }
+                else if (result is TranslateUnit.WhitespaceTranslateUnit)
+                {
+                    sb.Append("\n");
+                }
+                else
+                {
+                    sb.AppendFormat("\"{0}\" = \"{1}\";\n", result.Key, result.EscapedValue);
+                }
             }
 
             string dpath = Path.Combine(
