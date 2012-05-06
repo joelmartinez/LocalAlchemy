@@ -22,7 +22,7 @@ namespace LocalAlchemy
         public override IEnumerable<TranslateUnit> Parse(string file)
         {
             string[] rows = ReadFile(file);
-            string keyRegex = @"""([\w\d\s_\-]+)""";
+            string keyRegex = @"^""([\w\d\s_\-\.\?\!]+)""";
             string valueRegex = @"=\s*\""(.+)\"";";
 
             int i = 0;
