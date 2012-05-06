@@ -14,9 +14,14 @@ namespace LocalAlchemy
         {
         }
 
+        protected virtual XDocument ReadFile(string path)
+        {
+            return XDocument.Load(path, LoadOptions.None);
+        }
+
         public override IEnumerable<TranslateUnit> Parse(string file)
         {
-            XDocument doc = XDocument.Load(file, LoadOptions.None);
+            XDocument doc = ReadFile(file);
 
             return doc
                 .Descendants("resources")

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -15,9 +14,14 @@ namespace LocalAlchemy
         {
         }
 
+        protected virtual string[] ReadFile(string path)
+        {
+            return File.ReadAllLines(path);
+        }
+
         public override IEnumerable<TranslateUnit> Parse(string file)
         {
-            string[] rows = File.ReadAllLines(file);
+            string[] rows = ReadFile(file);
             string keyRegex = @"""([\w\d\s_\-]+)""";
             string valueRegex = @"=\s*\""(.+)\"";";
 
